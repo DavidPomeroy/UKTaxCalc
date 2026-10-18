@@ -6,7 +6,21 @@ import type {
 } from "@/lib/tax/types";
 import { CURRENT_TAX_YEAR } from "@/lib/tax/rules";
 
-export type Scenario = CalculationInput;
+export type TaxBasis = "cumulative" | "month1";
+
+/** A Scenario is the engine input plus the payroll view options that live
+ * in the URL (which pay period to show, and on which PAYE basis). */
+export interface Scenario extends CalculationInput {
+  periodNumber?: number;
+  taxBasis?: TaxBasis;
+}
+
+export const TAX_BASES: TaxBasis[] = ["cumulative", "month1"];
+
+export const TAX_BASIS_LABELS: Record<TaxBasis, string> = {
+  cumulative: "Cumulative",
+  month1: "Month 1",
+};
 
 export const DEFAULT_SCENARIO: Scenario = {
   taxYear: CURRENT_TAX_YEAR,
@@ -104,6 +118,22 @@ export function scenarioFromSearchParams(sp: SearchParams): Scenario {
   const freqRaw = (
     Array.isArray(sp.freq) ? sp.freq[0] : sp.freq
   ) as PayFrequency | undefined;
+  const payFrequency =
+    freqRaw && PAY_FREQUENCIES.includes(freqRaw)
+      ? freqRaw
+      : DEFAULT_SCENARIO.payFrequency;
+
+  // Payroll view options (only meaningful for monthly/weekly)
+  const basisRaw = (
+    Array.isArray(sp.basis) ? sp.basis[0] : sp.basis
+  ) as TaxBasis | undefined;
+  const periodsForFreq = payFrequency === "weekly" ? 52 : 12;
+  const periodRaw = num(sp.period);
+  const periodNumber =
+    periodRaw !== undefined && Number.isInteger(periodRaw)
+      ? Math.min(periodsForFreq, Math.max(1, periodRaw))
+      : 1;
+
   const pensionOn = bool(sp.pension);
   const method = (
     Array.isArray(sp.pensionMethod) ? sp.pensionMethod[0] : sp.pensionMethod
@@ -120,10 +150,9 @@ export function scenarioFromSearchParams(sp: SearchParams): Scenario {
       salary !== undefined
         ? Math.min(10_000_000, Math.max(0, salary))
         : DEFAULT_SCENARIO.grossAnnualSalary,
-    payFrequency:
-      freqRaw && PAY_FREQUENCIES.includes(freqRaw)
-        ? freqRaw
-        : DEFAULT_SCENARIO.payFrequency,
+    payFrequency,
+    periodNumber: payFrequency === "annual" ? undefined : periodNumber,
+    taxBasis: payFrequency === "annual" ? undefined : basisRaw ?? "cumulative",
     pension: {
       method: pensionOn
         ? method === "net-pay" ||
@@ -161,6 +190,9 @@ export function scenarioToSearchParams(s: Scenario): URLSearchParams {
     params.set("salary", String(s.grossAnnualSalary));
   if (s.payFrequency && s.payFrequency !== d.payFrequency)
     params.set("freq", s.payFrequency);
+  if (s.periodNumber && s.periodNumber > 1)
+    params.set("period", String(s.periodNumber));
+  if (s.taxBasis === "month1") params.set("basis", "month1");
   if (s.pension && s.pension.method !== "none") {
     params.set("pension", "1");
     params.set("pensionMethod", s.pension.method);

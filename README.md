@@ -18,6 +18,9 @@ Enter a gross salary and get a full annual breakdown:
   on qualifying earnings or full pay
 - **Take-home pay** — annual, monthly and weekly, plus effective and
   marginal rates, and total employer cost
+- **Payroll-accurate pay periods** — monthly/weekly figures using HMRC's
+  per-period thresholds and cumulative PAYE, with year-to-date totals for
+  reconciling a real payslip
 
 ## Current status
 
@@ -68,9 +71,11 @@ computed on the server, never in the browser.
    Postgraduate (Plan 2 + Postgraduate is common).
 6. **Advanced** — PAYE tax code (e.g. `1257L`, `99L`, `BR`, `D0`, `NT`),
    Blind Person's Allowance, Marriage Allowance transfer/receive.
-7. **Pay period** — switch the results between **Annual**, **Monthly** and
-   **Weekly**; every figure (take-home, breakdown, deductions, chart and
-   employer cost) is re-based on that selection.
+7. **Pay period** — choose **Annual estimate**, **Monthly payslip** or
+   **Weekly payslip**. Every figure is re-based on that selection; in the
+   payslip modes you also pick the **period number** (1–12 or 1–52) and the
+   **PAYE basis** (Cumulative or Month 1 / Week 1), and a **Payslip view**
+   panel shows this period alongside year-to-date totals.
 
 Results show the selected-period take-home pay with the other periods for
 reference, an itemised band-by-band breakdown, effective and marginal
@@ -122,10 +127,37 @@ curl -s http://localhost:3015/api/v1/calculations \
 
 Request fields mirror `CalculationRequestSchema` in
 `lib/schemas/calculation.ts`: `taxYear`, `region`, `grossAnnualSalary`,
-`payFrequency`, `pension`, `studentLoans`, `taxCode`,
-`customPersonalAllowance`, `blindPersonsAllowance`,
+`payFrequency`, `periodNumber`, `taxBasis`, `pension`, `studentLoans`,
+`taxCode`, `customPersonalAllowance`, `blindPersonsAllowance`,
 `marriageAllowanceTransfer`, `marriageAllowanceReceive`,
 `niCategoryLetter`, `employmentAllowance`.
+
+### Example: payroll period (reconcile a payslip)
+
+```bash
+curl -s http://localhost:3015/api/v1/calculations \
+  -H 'content-type: application/json' \
+  -d '{
+    "taxYear": "2026/27",
+    "region": "england",
+    "grossAnnualSalary": 45000,
+    "payFrequency": "monthly",
+    "periodNumber": 6,
+    "taxBasis": "cumulative",
+    "taxCode": "432L",
+    "pension": {
+      "method": "relief-at-source",
+      "employeePercent": 4,
+      "employerPercent": 3,
+      "basis": "qualifying-earnings"
+    }
+  }' | jq '.payroll.thisPeriod, .payroll.yearToDate'
+```
+
+Setting `payFrequency` to `monthly` or `weekly` adds a `payroll` block with
+`thisPeriod` and `yearToDate` figures for gross pay, income tax, employee
+and employer NI, pension, student loans and net pay, calculated with
+HMRC's per-period thresholds and cumulative PAYE.
 
 ### Example: quick lookup
 
@@ -158,9 +190,17 @@ Invalid input returns `400` with an RFC 9457 problem body:
   [auto-enrolment](https://www.gov.uk/workplace-pensions)).
 - PAYE employment income only — no self-employment, dividends, savings
   interest, rental income, benefits in kind or capital gains.
-- NI and student loans use annualised thresholds and assume constant pay.
+- NI and student loans use annualised thresholds in the annual estimate;
+  the monthly/weekly payroll view uses HMRC's separate per-period
+  thresholds instead (they are not simply annual ÷ periods).
+- Student loan deductions in the payroll view are rounded down to whole
+  pounds per period, as HMRC requires.
 - Relief-at-source pensions include basic-rate relief only; higher-rate
   relief via self-assessment is not modelled.
+- Payroll tax is calculated cumulatively across the tax year by default
+  (Month 1 / Week 1 available). A specific payroll product can still differ
+  by pennies because of its own table rounding or an in-year tax code
+  change — NI, employer NI and pension figures should match exactly.
 - Rounding is to the nearest penny per component, so totals may differ
   from payroll software by a few pence.
 

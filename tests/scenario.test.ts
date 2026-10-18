@@ -52,3 +52,70 @@ describe("per-period scaling", () => {
     expect(formatPeriodGBP(4_535_740, "annual")).toBe("£45,357.40");
   });
 });
+
+
+describe("payroll view options (period and basis params)", () => {
+  it("defaults to period 1 on a cumulative basis when payroll is selected", () => {
+    const s = scenarioFromSearchParams({ freq: "monthly" });
+    expect(s.periodNumber).toBe(1);
+    expect(s.taxBasis).toBe("cumulative");
+  });
+
+  it("parses period and basis", () => {
+    const s = scenarioFromSearchParams({
+      freq: "monthly",
+      period: "6",
+      basis: "month1",
+    });
+    expect(s.periodNumber).toBe(6);
+    expect(s.taxBasis).toBe("month1");
+  });
+
+  it("clamps the period to the frequency (12 monthly, 52 weekly)", () => {
+    expect(
+      scenarioFromSearchParams({ freq: "monthly", period: "13" }).periodNumber
+    ).toBe(12);
+    expect(
+      scenarioFromSearchParams({ freq: "weekly", period: "99" }).periodNumber
+    ).toBe(52);
+    expect(
+      scenarioFromSearchParams({ freq: "monthly", period: "0" }).periodNumber
+    ).toBe(1);
+  });
+
+  it("ignores payroll options in annual mode", () => {
+    const s = scenarioFromSearchParams({ period: "6", basis: "month1" });
+    expect(s.periodNumber).toBeUndefined();
+    expect(s.taxBasis).toBeUndefined();
+  });
+
+  it("serializes period only above 1 and basis only for month 1", () => {
+    const base = { ...DEFAULT_SCENARIO, payFrequency: "monthly" as const };
+    expect(scenarioToSearchParams(base).has("period")).toBe(false);
+    expect(scenarioToSearchParams(base).has("basis")).toBe(false);
+
+    const params = scenarioToSearchParams({
+      ...base,
+      periodNumber: 6,
+      taxBasis: "month1",
+    });
+    expect(params.get("freq")).toBe("monthly");
+    expect(params.get("period")).toBe("6");
+    expect(params.get("basis")).toBe("month1");
+  });
+
+  it("round-trips the payroll view through the URL", () => {
+    const original = {
+      ...DEFAULT_SCENARIO,
+      payFrequency: "weekly" as const,
+      periodNumber: 23,
+      taxBasis: "month1" as const,
+    };
+    const roundTripped = scenarioFromSearchParams(
+      Object.fromEntries(scenarioToSearchParams(original).entries())
+    );
+    expect(roundTripped.payFrequency).toBe("weekly");
+    expect(roundTripped.periodNumber).toBe(23);
+    expect(roundTripped.taxBasis).toBe("month1");
+  });
+});

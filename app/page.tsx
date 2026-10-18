@@ -1,10 +1,12 @@
 import { headers } from "next/headers";
 import { calculate } from "@/lib/tax/calculate";
+import { calculatePayrollPeriod } from "@/lib/tax/pay-period";
 import {
   scenarioFromSearchParams,
   type SearchParams,
 } from "@/lib/calculator/scenario";
 import { SalaryForm } from "@/components/calculator/salary-form";
+import { PayrollPanel } from "@/components/calculator/payroll-panel";
 import { ResultsHero } from "@/components/calculator/results-hero";
 import {
   BreakdownTable,
@@ -27,6 +29,17 @@ export default async function Home({
   const scenario = scenarioFromSearchParams(await searchParams);
   const result = calculate(scenario);
   const frequency = scenario.payFrequency ?? "annual";
+
+  // Payroll view: per-period figures with HMRC per-period thresholds and
+  // cumulative (or month 1) PAYE.
+  const payroll =
+    frequency === "monthly" || frequency === "weekly"
+      ? calculatePayrollPeriod(scenario, {
+          frequency,
+          periodNumber: scenario.periodNumber ?? 1,
+          taxBasis: scenario.taxBasis,
+        })
+      : null;
 
   // Server-side origin for the copyable curl example. Using request headers
   // avoids a `typeof window` branch, which caused a hydration mismatch.
@@ -58,6 +71,7 @@ export default async function Home({
         </div>
 
         <div className="space-y-6" aria-live="polite">
+          {payroll && <PayrollPanel payroll={payroll} />}
           <ResultsHero result={result} scenario={scenario} />
           <div className="grid gap-6 md:grid-cols-2">
             <DeductionsChart result={result} frequency={frequency} />

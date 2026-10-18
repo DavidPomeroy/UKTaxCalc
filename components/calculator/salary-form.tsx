@@ -45,12 +45,15 @@ export function SalaryForm({ initial }: { initial: Scenario }) {
       if (timer.current) clearTimeout(timer.current);
       timer.current = setTimeout(() => {
         const params = scenarioToSearchParams(next);
-        // `freq` is owned by the FrequencySelector (not this form); carry the
-        // live value over so a stale local snapshot can't reset the user's
-        // pay-period choice when they next edit a field.
-        const liveFreq = new URLSearchParams(window.location.search).get("freq");
-        if (liveFreq) params.set("freq", liveFreq);
-        else params.delete("freq");
+        // `freq`, `period` and `basis` are owned by the pay-period controls
+        // (not this form); carry the live values over so a stale local
+        // snapshot can't reset the user's selection.
+        const live = new URLSearchParams(window.location.search);
+        for (const key of ["freq", "period", "basis"]) {
+          const value = live.get(key);
+          if (value) params.set(key, value);
+          else params.delete(key);
+        }
         const qs = params.toString();
         router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
       }, 250);
