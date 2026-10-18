@@ -25,14 +25,13 @@ Implemented and tested:
 
 - `lib/tax/` — the calculation engine (integer-pence arithmetic)
 - `lib/tax/rules/` — versioned 2025/26 and 2026/27 rule sets
-- `tests/` — 27 unit tests, all passing (`pnpm test`)
+- `tests/` — 38 unit tests, all passing (`pnpm test`)
 - `lib/schemas/calculation.ts` — Zod request/response schemas for the API
-
-Coming next:
-
-- The calculator UI (`app/page.tsx` is still the Next.js starter page)
-- Public API routes under `app/api/v1/`
-- OpenAPI document at `/openapi.json` and interactive docs at `/scalar`
+- `app/` — the calculator UI (server-rendered results, shareable URLs)
+- `app/api/v1/` — the public API (`/api/v1/calculations`, `/take-home-pay`,
+  `/tax-years`, `/tax-years/:year/rates`, `/health`)
+- `/openapi.json` — OpenAPI 3.1 document
+- `/scalar` — interactive API reference
 
 ## Getting started
 
@@ -54,7 +53,7 @@ pnpm build
 pnpm start       # production server, also on :3015
 ```
 
-## Using the UI (planned)
+## Using the UI
 
 The calculator page is a server-rendered form: every figure you see is
 computed on the server, never in the browser.
@@ -67,21 +66,26 @@ computed on the server, never in the browser.
    `relief-at-source`, and enter employee/employer percentages.
 5. **Student loan** — tick any combination of Plan 1, 2, 4, 5 and
    Postgraduate (Plan 2 + Postgraduate is common).
-6. **Advanced** — PAYE tax code (e.g. `1257L`, `BR`, `D0`, `NT`),
+6. **Advanced** — PAYE tax code (e.g. `1257L`, `99L`, `BR`, `D0`, `NT`),
    Blind Person's Allowance, Marriage Allowance transfer/receive.
+7. **Pay period** — switch the results between **Annual**, **Monthly** and
+   **Weekly**; every figure (take-home, breakdown, deductions, chart and
+   employer cost) is re-based on that selection.
 
-Results show annual / monthly / weekly take-home pay, an itemised
-band-by-band breakdown, an effective-rate and marginal-rate summary,
-employer cost, and a link that copies the current scenario as a shareable
-URL (inputs live in the query string — nothing is stored server-side).
+Results show the selected-period take-home pay with the other periods for
+reference, an itemised band-by-band breakdown, effective and marginal
+rates, employer cost, and a link that copies the current scenario as a
+shareable URL (inputs live in the query string — nothing is stored
+server-side). The API card shows a ready-to-run `curl` for the exact
+scenario on screen.
 
-Example shareable URL once the UI lands:
+Example shareable URL:
 
 ```text
-http://localhost:3015/?salary=60000&region=england&taxYear=2026%2F27&loans=plan2
+http://localhost:3015/?salary=60000&region=scotland&taxYear=2026%2F27&loans=plan2&freq=monthly
 ```
 
-## Using the API (planned)
+## Using the API
 
 The public API is stateless and unauthenticated, with CORS enabled so it
 can be called from any site. Money is in pounds, rates are decimals.
@@ -166,13 +170,15 @@ Invalid input returns `400` with an RFC 9457 problem body:
 
 ```text
 app/                 Next.js App Router (UI + API routes)
+components/calculator/  form, results, charts, frequency selector
 components/ui/       shadcn/ui primitives (hand-installed)
 lib/tax/             calculation engine (server-side only)
 lib/tax/rules/       versioned 2025/26 and 2026/27 rule sets
 lib/schemas/         Zod API request/response schemas
-lib/api/             (planned) CORS, errors, rate limiting
-lib/openapi/         (planned) OpenAPI document builder
-tests/               27 engine unit tests
+lib/api/             CORS, RFC 9457 errors, rate limiting, serialization
+lib/openapi/         OpenAPI document builder (zod-openapi)
+lib/calculator/      URL scenario + per-period formatting helpers
+tests/               38 unit tests (engine and scenario layer)
 ```
 
 ## Deploy
