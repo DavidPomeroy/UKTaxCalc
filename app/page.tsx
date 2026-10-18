@@ -25,6 +25,7 @@ export default async function Home({
 }) {
   const scenario = scenarioFromSearchParams(await searchParams);
   const result = calculate(scenario);
+  const frequency = scenario.payFrequency ?? "annual";
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8">
@@ -45,13 +46,13 @@ export default async function Home({
         </div>
 
         <div className="space-y-6" aria-live="polite">
-          <ResultsHero result={result} />
+          <ResultsHero result={result} scenario={scenario} />
           <div className="grid gap-6 md:grid-cols-2">
-            <DeductionsChart result={result} />
-            <EmployerCard result={result} />
+            <DeductionsChart result={result} frequency={frequency} />
+            <EmployerCard result={result} frequency={frequency} />
           </div>
-          <BreakdownTable result={result} />
-          <DeductionsTable result={result} />
+          <BreakdownTable result={result} frequency={frequency} />
+          <DeductionsTable result={result} frequency={frequency} />
           <div className="grid gap-6 md:grid-cols-2">
             <ShareCard scenario={scenario} />
             <ApiCard scenario={scenario} />

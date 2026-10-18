@@ -5,16 +5,32 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { CalculationResult } from "@/lib/tax/types";
 import {
+  PERIOD_NOUNS,
   REGION_LABELS,
   formatGBP,
   formatPercent,
+  formatPeriodGBP,
+  type PayFrequency,
+  type Scenario,
 } from "@/lib/calculator/scenario";
+import { FrequencySelector } from "./frequency-selector";
 
-export function ResultsHero({ result }: { result: CalculationResult }) {
+const OTHER_PERIODS: PayFrequency[] = ["annual", "monthly", "weekly"];
+
+export function ResultsHero({
+  result,
+  scenario,
+}: {
+  result: CalculationResult;
+  scenario: Scenario;
+}) {
   const { takeHome, gross } = result;
+  const frequency = scenario.payFrequency ?? "annual";
+  const label = PERIOD_NOUNS[frequency];
+  const others = OTHER_PERIODS.filter((f) => f !== frequency);
+
   return (
     <Card className="overflow-hidden">
       <div className="bg-primary px-6 pb-6 pt-6 text-primary-foreground">
@@ -27,32 +43,27 @@ export function ResultsHero({ result }: { result: CalculationResult }) {
           </Badge>
         </div>
         <CardDescription className="text-primary-foreground/70">
-          {formatGBP(gross.annual, { decimals: 0 })} gross per year
+          {formatPeriodGBP(gross.annual, frequency, { decimals: 0 })} gross per{" "}
+          {label} ({formatGBP(gross.annual, { decimals: 0 })} per year)
         </CardDescription>
       </div>
       <CardContent className="pt-4">
-        <Tabs defaultValue="annual">
-          <TabsList aria-label="Pay period">
-            <TabsTrigger value="annual">Annual</TabsTrigger>
-            <TabsTrigger value="monthly">Monthly</TabsTrigger>
-            <TabsTrigger value="weekly">Weekly</TabsTrigger>
-          </TabsList>
-          <TabsContent value="annual" className="pt-2">
-            <p className="font-mono text-4xl font-bold tabular-nums" aria-live="polite">
-              {formatGBP(takeHome.annual)}
-            </p>
-          </TabsContent>
-          <TabsContent value="monthly" className="pt-2">
-            <p className="font-mono text-4xl font-bold tabular-nums" aria-live="polite">
-              {formatGBP(takeHome.monthly)}
-            </p>
-          </TabsContent>
-          <TabsContent value="weekly" className="pt-2">
-            <p className="font-mono text-4xl font-bold tabular-nums" aria-live="polite">
-              {formatGBP(takeHome.weekly)}
-            </p>
-          </TabsContent>
-        </Tabs>
+        <FrequencySelector scenario={scenario} />
+        <p
+          className="mt-3 font-mono text-4xl font-bold tabular-nums"
+          aria-live="polite"
+        >
+          {formatPeriodGBP(takeHome.annual, frequency)}
+        </p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          per {label}
+          {others.map((f) => (
+            <span key={f}>
+              {" · "}
+              {formatPeriodGBP(takeHome.annual, f)} per {PERIOD_NOUNS[f]}
+            </span>
+          ))}
+        </p>
         <div className="mt-4 flex flex-wrap gap-2 text-sm">
           <Badge variant="outline">
             Effective rate {formatPercent(takeHome.effectiveRate)}
@@ -61,7 +72,7 @@ export function ResultsHero({ result }: { result: CalculationResult }) {
             Marginal rate {formatPercent(takeHome.marginalRate)}
           </Badge>
           <Badge variant="outline">
-            {formatGBP(result.deductionsTotal)} total deductions
+            {formatPeriodGBP(result.deductionsTotal, frequency)} deductions
           </Badge>
         </div>
       </CardContent>

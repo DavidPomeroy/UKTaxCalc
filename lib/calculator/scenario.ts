@@ -33,6 +33,43 @@ const REGIONS: Region[] = ["england", "wales", "scotland", "northern-ireland"];
 const TAX_YEARS: TaxYear[] = ["2026/27", "2025/26"];
 const LOANS: StudentLoanPlan[] = ["plan1", "plan2", "plan4", "plan5", "postgraduate"];
 
+export type PayFrequency = NonNullable<CalculationInput["payFrequency"]>;
+
+export const PAY_FREQUENCIES: PayFrequency[] = ["annual", "monthly", "weekly"];
+
+export const PERIOD_LABELS: Record<PayFrequency, string> = {
+  annual: "Annual",
+  monthly: "Monthly",
+  weekly: "Weekly",
+};
+
+/** Noun form for prose, e.g. "per month" rather than "per monthly". */
+export const PERIOD_NOUNS: Record<PayFrequency, string> = {
+  annual: "year",
+  monthly: "month",
+  weekly: "week",
+};
+
+const PERIOD_DIVISOR: Record<PayFrequency, number> = {
+  annual: 1,
+  monthly: 12,
+  weekly: 52,
+};
+
+/** Scale an annual pence amount into the selected pay period. */
+export function perPeriodPence(pence: number, freq: PayFrequency): number {
+  return Math.round(pence / PERIOD_DIVISOR[freq]);
+}
+
+/** Format an annual pence amount in the selected pay period as GBP. */
+export function formatPeriodGBP(
+  pence: number,
+  freq: PayFrequency,
+  opts: { decimals?: number; compact?: boolean } = {}
+): string {
+  return formatGBP(perPeriodPence(pence, freq), opts);
+}
+
 function num(value: string | string[] | undefined): number | undefined {
   const raw = Array.isArray(value) ? value[0] : value;
   if (raw === undefined || raw === "") return undefined;
@@ -64,6 +101,9 @@ export function scenarioFromSearchParams(sp: SearchParams): Scenario {
     .filter((s): s is StudentLoanPlan => LOANS.includes(s as StudentLoanPlan));
 
   const salary = num(sp.salary);
+  const freqRaw = (
+    Array.isArray(sp.freq) ? sp.freq[0] : sp.freq
+  ) as PayFrequency | undefined;
   const pensionOn = bool(sp.pension);
   const method = (
     Array.isArray(sp.pensionMethod) ? sp.pensionMethod[0] : sp.pensionMethod
@@ -80,7 +120,10 @@ export function scenarioFromSearchParams(sp: SearchParams): Scenario {
       salary !== undefined
         ? Math.min(10_000_000, Math.max(0, salary))
         : DEFAULT_SCENARIO.grossAnnualSalary,
-    payFrequency: DEFAULT_SCENARIO.payFrequency,
+    payFrequency:
+      freqRaw && PAY_FREQUENCIES.includes(freqRaw)
+        ? freqRaw
+        : DEFAULT_SCENARIO.payFrequency,
     pension: {
       method: pensionOn
         ? method === "net-pay" ||
@@ -116,6 +159,8 @@ export function scenarioToSearchParams(s: Scenario): URLSearchParams {
   if (s.region !== d.region) params.set("region", s.region);
   if (s.grossAnnualSalary !== d.grossAnnualSalary)
     params.set("salary", String(s.grossAnnualSalary));
+  if (s.payFrequency && s.payFrequency !== d.payFrequency)
+    params.set("freq", s.payFrequency);
   if (s.pension && s.pension.method !== "none") {
     params.set("pension", "1");
     params.set("pensionMethod", s.pension.method);

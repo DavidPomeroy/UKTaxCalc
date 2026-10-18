@@ -14,20 +14,34 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { CalculationResult } from "@/lib/tax/types";
-import { formatGBP, formatPercent } from "@/lib/calculator/scenario";
+import {
+  PERIOD_LABELS,
+  PERIOD_NOUNS,
+  formatPercent,
+  formatPeriodGBP,
+  type PayFrequency,
+} from "@/lib/calculator/scenario";
 
 function bandName(name: string): string {
   return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
-export function BreakdownTable({ result }: { result: CalculationResult }) {
+export function BreakdownTable({
+  result,
+  frequency,
+}: {
+  result: CalculationResult;
+  frequency: PayFrequency;
+}) {
+  const suffix = frequency === "annual" ? "" : ` (${frequency})`;
   return (
     <Card>
       <CardHeader>
         <CardTitle>Income tax breakdown</CardTitle>
         <CardDescription>
-          Personal allowance {formatGBP(result.incomeTax.personalAllowance)} ·{" "}
-          taxable income {formatGBP(result.incomeTax.taxableIncome)}
+          Personal allowance {formatPeriodGBP(result.incomeTax.personalAllowance, frequency)} ·{" "}
+          taxable income {formatPeriodGBP(result.incomeTax.taxableIncome, frequency)}
+          {suffix}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -36,8 +50,8 @@ export function BreakdownTable({ result }: { result: CalculationResult }) {
             <TableRow>
               <TableHead>Band</TableHead>
               <TableHead className="text-right">Rate</TableHead>
-              <TableHead className="text-right">In band</TableHead>
-              <TableHead className="text-right">Tax</TableHead>
+              <TableHead className="text-right">In band{suffix}</TableHead>
+              <TableHead className="text-right">Tax{suffix}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -48,10 +62,10 @@ export function BreakdownTable({ result }: { result: CalculationResult }) {
                   {formatPercent(b.rate, 0)}
                 </TableCell>
                 <TableCell className="text-right font-mono tabular-nums">
-                  {formatGBP(b.amount)}
+                  {formatPeriodGBP(b.amount, frequency)}
                 </TableCell>
                 <TableCell className="text-right font-mono tabular-nums">
-                  {formatGBP(b.tax)}
+                  {formatPeriodGBP(b.tax, frequency)}
                 </TableCell>
               </TableRow>
             ))}
@@ -60,7 +74,7 @@ export function BreakdownTable({ result }: { result: CalculationResult }) {
               <TableCell />
               <TableCell />
               <TableCell className="text-right font-mono tabular-nums">
-                {formatGBP(result.incomeTax.total)}
+                {formatPeriodGBP(result.incomeTax.total, frequency)}
               </TableCell>
             </TableRow>
           </TableBody>
@@ -70,7 +84,13 @@ export function BreakdownTable({ result }: { result: CalculationResult }) {
   );
 }
 
-export function DeductionsTable({ result }: { result: CalculationResult }) {
+export function DeductionsTable({
+  result,
+  frequency,
+}: {
+  result: CalculationResult;
+  frequency: PayFrequency;
+}) {
   const rows: Array<[string, number, string?]> = [
     ["Income tax", result.incomeTax.total],
     ["Employee NI", result.nationalInsurance.total],
@@ -98,15 +118,18 @@ export function DeductionsTable({ result }: { result: CalculationResult }) {
     <Card>
       <CardHeader>
         <CardTitle>All deductions</CardTitle>
-        <CardDescription>What leaves your pay, and where it goes.</CardDescription>
+        <CardDescription>
+          What leaves your pay, per {PERIOD_NOUNS[frequency]}.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Deduction</TableHead>
-              <TableHead className="text-right">Annual</TableHead>
-              <TableHead className="text-right">Monthly</TableHead>
+              <TableHead className="text-right">
+                {PERIOD_LABELS[frequency]}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -121,20 +144,14 @@ export function DeductionsTable({ result }: { result: CalculationResult }) {
                   )}
                 </TableCell>
                 <TableCell className="text-right font-mono tabular-nums">
-                  {formatGBP(annual)}
-                </TableCell>
-                <TableCell className="text-right font-mono tabular-nums">
-                  {formatGBP(Math.round(annual / 12))}
+                  {formatPeriodGBP(annual, frequency)}
                 </TableCell>
               </TableRow>
             ))}
             <TableRow className="font-semibold">
               <TableCell>Total deductions</TableCell>
               <TableCell className="text-right font-mono tabular-nums">
-                {formatGBP(result.deductionsTotal)}
-              </TableCell>
-              <TableCell className="text-right font-mono tabular-nums">
-                {formatGBP(Math.round(result.deductionsTotal / 12))}
+                {formatPeriodGBP(result.deductionsTotal, frequency)}
               </TableCell>
             </TableRow>
           </TableBody>

@@ -9,48 +9,64 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { CalculationResult } from "@/lib/tax/types";
-import { formatGBP } from "@/lib/calculator/scenario";
+import {
+  PERIOD_LABELS,
+  formatGBP,
+  formatPeriodGBP,
+  perPeriodPence,
+  type PayFrequency,
+} from "@/lib/calculator/scenario";
 
 const COLORS = ["#16a34a", "#dc2626", "#ea580c", "#7c3aed", "#0d9488"];
 
 interface Slice {
   name: string;
-  value: number;
+  pence: number;
 }
 
-export function DeductionsChart({ result }: { result: CalculationResult }) {
-  const slices: Slice[] = [
-    { name: "Take home", value: result.takeHome.annual / 100 },
-  ];
+export function DeductionsChart({
+  result,
+  frequency,
+}: {
+  result: CalculationResult;
+  frequency: PayFrequency;
+}) {
+  const slices: Slice[] = [{ name: "Take home", pence: result.takeHome.annual }];
   if (result.incomeTax.total > 0)
-    slices.push({ name: "Income tax", value: result.incomeTax.total / 100 });
+    slices.push({ name: "Income tax", pence: result.incomeTax.total });
   if (result.nationalInsurance.total > 0)
-    slices.push({ name: "Employee NI", value: result.nationalInsurance.total / 100 });
+    slices.push({ name: "Employee NI", pence: result.nationalInsurance.total });
   if (result.studentLoan.total > 0)
-    slices.push({ name: "Student loan", value: result.studentLoan.total / 100 });
+    slices.push({ name: "Student loan", pence: result.studentLoan.total });
   const pensionOut = result.pension.employee + result.pension.salarySacrifice;
-  if (pensionOut > 0)
-    slices.push({ name: "Pension", value: pensionOut / 100 });
+  if (pensionOut > 0) slices.push({ name: "Pension", pence: pensionOut });
+
+  const data = slices.map((s) => ({
+    name: s.name,
+    value: perPeriodPence(s.pence, frequency) / 100,
+  }));
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Where your pay goes</CardTitle>
-        <CardDescription>Annual split of gross pay.</CardDescription>
+        <CardDescription>
+          {PERIOD_LABELS[frequency]} split of gross pay.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={slices}
+                data={data}
                 dataKey="value"
                 nameKey="name"
                 innerRadius="55%"
                 outerRadius="85%"
                 paddingAngle={2}
               >
-                {slices.map((s, i) => (
+                {data.map((s, i) => (
                   <Cell key={s.name} fill={COLORS[i % COLORS.length]} />
                 ))}
               </Pie>
@@ -73,7 +89,7 @@ export function DeductionsChart({ result }: { result: CalculationResult }) {
                 {s.name}
               </span>
               <span className="font-mono tabular-nums">
-                {formatGBP(Math.round(s.value * 100))}
+                {formatPeriodGBP(s.pence, frequency)}
               </span>
             </li>
           ))}
