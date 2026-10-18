@@ -4,7 +4,7 @@ import * as React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { cn } from "@/lib/utils";
 
-export interface TooltipProps extends React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Root> {}
+export type TooltipProps = React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Root>;
 
 function Tooltip({
   ...props
@@ -12,7 +12,7 @@ function Tooltip({
   return <TooltipPrimitive.Root data-slot="tooltip" {...props} />;
 }
 
-export interface TooltipTriggerProps extends React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Trigger> {}
+export type TooltipTriggerProps = React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Trigger>;
 
 const TooltipTrigger = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Trigger>,
@@ -26,8 +26,7 @@ const TooltipTrigger = React.forwardRef<
 ));
 TooltipTrigger.displayName = TooltipPrimitive.Trigger.displayName;
 
-export interface TooltipContentProps
-  extends React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content> {}
+export type TooltipContentProps = React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>;
 
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,

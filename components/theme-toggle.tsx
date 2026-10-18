@@ -1,29 +1,22 @@
 "use client";
 
-import * as React from "react";
 import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => setMounted(true), []);
+  const { resolvedTheme, setTheme } = useTheme();
 
   return (
     <Button
       variant="ghost"
       size="icon"
       aria-label="Toggle theme"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
     >
-      {!mounted ? (
-        <Sun className="h-4 w-4" />
-      ) : theme === "dark" ? (
-        <Sun className="h-4 w-4" />
-      ) : (
-        <Moon className="h-4 w-4" />
-      )}
+      {/* Both icons render; CSS picks per theme — no hydration mismatch. */}
+      <Sun className="h-4 w-4 dark:hidden" />
+      <Moon className="hidden h-4 w-4 dark:block" />
     </Button>
   );
 }

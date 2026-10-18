@@ -1,8 +1,6 @@
 import { buildOpenApiDocument } from "@/lib/openapi/document";
 import { withCors } from "@/lib/api/respond";
 
-export const dynamic = "force-static";
-
 export async function GET() {
   const document = buildOpenApiDocument();
   return Response.json(document, {

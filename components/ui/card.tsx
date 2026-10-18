@@ -3,7 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type CardProps = React.HTMLAttributes<HTMLDivElement>;
 
 function Card({ className, ...props }: CardProps) {
   return (
@@ -18,7 +18,7 @@ function Card({ className, ...props }: CardProps) {
 }
 Card.displayName = "Card";
 
-export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type CardHeaderProps = React.HTMLAttributes<HTMLDivElement>;
 
 function CardHeader({ className, ...props }: CardHeaderProps) {
   return (
@@ -33,7 +33,7 @@ function CardHeader({ className, ...props }: CardHeaderProps) {
 }
 CardHeader.displayName = "CardHeader";
 
-export interface CardTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {}
+export type CardTitleProps = React.HTMLAttributes<HTMLHeadingElement>;
 
 function CardTitle({ className, ...props }: CardTitleProps) {
   return (
@@ -48,8 +48,7 @@ function CardTitle({ className, ...props }: CardTitleProps) {
 }
 CardTitle.displayName = "CardTitle";
 
-export interface CardDescriptionProps
-  extends React.HTMLAttributes<HTMLParagraphElement> {}
+export type CardDescriptionProps = React.HTMLAttributes<HTMLParagraphElement>;
 
 function CardDescription({ className, ...props }: CardDescriptionProps) {
   return (
@@ -61,7 +60,7 @@ function CardDescription({ className, ...props }: CardDescriptionProps) {
 }
 CardDescription.displayName = "CardDescription";
 
-export interface CardContentProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type CardContentProps = React.HTMLAttributes<HTMLDivElement>;
 
 function CardContent({ className, ...props }: CardContentProps) {
   return (
@@ -70,7 +69,7 @@ function CardContent({ className, ...props }: CardContentProps) {
 }
 CardContent.displayName = "CardContent";
 
-export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type CardFooterProps = React.HTMLAttributes<HTMLDivElement>;
 
 function CardFooter({ className, ...props }: CardFooterProps) {
   return (

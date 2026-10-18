@@ -4,7 +4,7 @@ import * as React from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import { cn } from "@/lib/utils";
 
-export interface TabsProps extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Root> {}
+export type TabsProps = React.ComponentPropsWithoutRef<typeof TabsPrimitive.Root>;
 
 const Tabs = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Root>,
@@ -18,7 +18,7 @@ const Tabs = React.forwardRef<
 ));
 Tabs.displayName = TabsPrimitive.Root.displayName;
 
-export interface TabsListProps extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.List> {}
+export type TabsListProps = React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>;
 
 const TabsList = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.List>,
@@ -35,7 +35,7 @@ const TabsList = React.forwardRef<
 ));
 TabsList.displayName = TabsPrimitive.List.displayName;
 
-export interface TabsTriggerProps extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> {}
+export type TabsTriggerProps = React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>;
 
 const TabsTrigger = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Trigger>,
@@ -52,7 +52,7 @@ const TabsTrigger = React.forwardRef<
 ));
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
 
-export interface TabsContentProps extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content> {}
+export type TabsContentProps = React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>;
 
 const TabsContent = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Content>,

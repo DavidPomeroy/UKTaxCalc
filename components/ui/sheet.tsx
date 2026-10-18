@@ -5,7 +5,7 @@ import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export interface SheetProps extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Root> {}
+export type SheetProps = React.ComponentPropsWithoutRef<typeof SheetPrimitive.Root>;
 
 function Sheet({
   ...props
@@ -13,7 +13,7 @@ function Sheet({
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;
 }
 
-export interface SheetTriggerProps extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Trigger> {}
+export type SheetTriggerProps = React.ComponentPropsWithoutRef<typeof SheetPrimitive.Trigger>;
 
 const SheetTrigger = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Trigger>,
@@ -27,7 +27,7 @@ const SheetTrigger = React.forwardRef<
 ));
 SheetTrigger.displayName = SheetPrimitive.Trigger.displayName;
 
-export interface SheetContentProps extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content> {}
+export type SheetContentProps = React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>;
 
 const SheetContent = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
@@ -52,7 +52,7 @@ const SheetContent = React.forwardRef<
 ));
 SheetContent.displayName = SheetPrimitive.Content.displayName;
 
-export interface SheetHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type SheetHeaderProps = React.HTMLAttributes<HTMLDivElement>;
 
 function SheetHeader({ className, ...props }: SheetHeaderProps) {
   return (
@@ -64,7 +64,7 @@ function SheetHeader({ className, ...props }: SheetHeaderProps) {
 }
 SheetHeader.displayName = "SheetHeader";
 
-export interface SheetTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {}
+export type SheetTitleProps = React.HTMLAttributes<HTMLHeadingElement>;
 
 function SheetTitle({ className, ...props }: SheetTitleProps) {
   return (
@@ -79,8 +79,7 @@ function SheetTitle({ className, ...props }: SheetTitleProps) {
 }
 SheetTitle.displayName = "SheetTitle";
 
-export interface SheetDescriptionProps
-  extends React.HTMLAttributes<HTMLParagraphElement> {}
+export type SheetDescriptionProps = React.HTMLAttributes<HTMLParagraphElement>;
 
 function SheetDescription({ className, ...props }: SheetDescriptionProps) {
   return (

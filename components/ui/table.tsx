@@ -3,7 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export interface TableProps extends React.HTMLAttributes<HTMLTableElement> {}
+export type TableProps = React.HTMLAttributes<HTMLTableElement>;
 
 function Table({ className, ...props }: TableProps) {
   return (
@@ -17,7 +17,7 @@ function Table({ className, ...props }: TableProps) {
 }
 Table.displayName = "Table";
 
-export interface TableCaptionProps extends React.HTMLAttributes<HTMLTableCaptionElement> {}
+export type TableCaptionProps = React.HTMLAttributes<HTMLTableCaptionElement>;
 
 function TableCaption({ className, ...props }: TableCaptionProps) {
   return (
@@ -32,7 +32,7 @@ function TableCaption({ className, ...props }: TableCaptionProps) {
 }
 TableCaption.displayName = "TableCaption";
 
-export interface TableHeaderProps extends React.HTMLAttributes<HTMLTableSectionElement> {}
+export type TableHeaderProps = React.HTMLAttributes<HTMLTableSectionElement>;
 
 function TableHeader({ className, ...props }: TableHeaderProps) {
   return (
@@ -44,7 +44,7 @@ function TableHeader({ className, ...props }: TableHeaderProps) {
 }
 TableHeader.displayName = "TableHeader";
 
-export interface TableBodyProps extends React.HTMLAttributes<HTMLTableSectionElement> {}
+export type TableBodyProps = React.HTMLAttributes<HTMLTableSectionElement>;
 
 function TableBody({ className, ...props }: TableBodyProps) {
   return (
@@ -53,7 +53,7 @@ function TableBody({ className, ...props }: TableBodyProps) {
 }
 TableBody.displayName = "TableBody";
 
-export interface TableFooterProps extends React.HTMLAttributes<HTMLTableSectionElement> {}
+export type TableFooterProps = React.HTMLAttributes<HTMLTableSectionElement>;
 
 function TableFooter({ className, ...props }: TableFooterProps) {
   return (
@@ -65,7 +65,7 @@ function TableFooter({ className, ...props }: TableFooterProps) {
 }
 TableFooter.displayName = "TableFooter";
 
-export interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {}
+export type TableRowProps = React.HTMLAttributes<HTMLTableRowElement>;
 
 function TableRow({ className, ...props }: TableRowProps) {
   return (
@@ -80,7 +80,7 @@ function TableRow({ className, ...props }: TableRowProps) {
 }
 TableRow.displayName = "TableRow";
 
-export interface TableHeadProps extends React.HTMLAttributes<HTMLTableCellElement> {}
+export type TableHeadProps = React.HTMLAttributes<HTMLTableCellElement>;
 
 function TableHead({ className, ...props }: TableHeadProps) {
   return (
@@ -95,7 +95,7 @@ function TableHead({ className, ...props }: TableHeadProps) {
 }
 TableHead.displayName = "TableHead";
 
-export interface TableCellProps extends React.HTMLAttributes<HTMLTableDataCellElement> {}
+export type TableCellProps = React.HTMLAttributes<HTMLTableDataCellElement>;
 
 function TableCell({ className, ...props }: TableCellProps) {
   return (

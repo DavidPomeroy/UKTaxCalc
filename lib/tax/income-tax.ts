@@ -1,11 +1,10 @@
-import { clamp, positive, roundPence, sumPence, toPence } from "./money";
+import { clamp, positive, roundPence, toPence } from "./money";
 import type {
   CalculationInput,
   IncomeTaxResult,
   BandResult,
   TaxBand,
   TaxYear,
-  Region,
 } from "./types";
 import { getBands, getRules } from "./rules";
 
