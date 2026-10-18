@@ -9,29 +9,33 @@ export const rules202627 = {
   blindPersonsAllowance: 3250,
   marriageAllowanceTransfer: 1260,
 
+  /** Income tax bands are expressed in TAXABLE income (after the Personal
+   * Allowance) with INCLUSIVE bounds in whole pounds: each band runs from
+   * `lower` to `upper`, and the next band starts at the previous upper + 1.
+   * Band width is therefore (upper − lower + 1). */
   incomeTax: {
     england: [
       { name: "basic", rate: 0.20, lower: 0, upper: 37700 },
-      { name: "higher", rate: 0.40, lower: 37700, upper: 112570 },
-      { name: "additional", rate: 0.45, lower: 112570, upper: Infinity },
+      { name: "higher", rate: 0.40, lower: 37701, upper: 112570 },
+      { name: "additional", rate: 0.45, lower: 112571, upper: Infinity },
     ] as TaxBand[],
     wales: [
       { name: "basic", rate: 0.20, lower: 0, upper: 37700 },
-      { name: "higher", rate: 0.40, lower: 37700, upper: 112570 },
-      { name: "additional", rate: 0.45, lower: 112570, upper: Infinity },
+      { name: "higher", rate: 0.40, lower: 37701, upper: 112570 },
+      { name: "additional", rate: 0.45, lower: 112571, upper: Infinity },
     ] as TaxBand[],
     "northern-ireland": [
       { name: "basic", rate: 0.20, lower: 0, upper: 37700 },
-      { name: "higher", rate: 0.40, lower: 37700, upper: 112570 },
-      { name: "additional", rate: 0.45, lower: 112570, upper: Infinity },
+      { name: "higher", rate: 0.40, lower: 37701, upper: 112570 },
+      { name: "additional", rate: 0.45, lower: 112571, upper: Infinity },
     ] as TaxBand[],
     scotland: [
       { name: "starter", rate: 0.19, lower: 0, upper: 3967 },
-      { name: "basic", rate: 0.20, lower: 3967, upper: 16956 },
-      { name: "intermediate", rate: 0.21, lower: 16956, upper: 31092 },
-      { name: "higher", rate: 0.42, lower: 31092, upper: 62430 },
-      { name: "advanced", rate: 0.45, lower: 62430, upper: 112570 },
-      { name: "top", rate: 0.48, lower: 112570, upper: Infinity },
+      { name: "basic", rate: 0.20, lower: 3968, upper: 16956 },
+      { name: "intermediate", rate: 0.21, lower: 16957, upper: 31092 },
+      { name: "higher", rate: 0.42, lower: 31093, upper: 62430 },
+      { name: "advanced", rate: 0.45, lower: 62431, upper: 112570 },
+      { name: "top", rate: 0.48, lower: 112571, upper: Infinity },
     ] as TaxBand[],
   },
 

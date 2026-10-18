@@ -21,26 +21,26 @@ function publishedBands(taxYear: TaxYear, region: Region) {
 
 const RUK_BANDS_2026_27 = [
   { name: "basic", rate: 0.2, from: 12570, to: 50270 },
-  { name: "higher", rate: 0.4, from: 50270, to: 125140 },
-  { name: "additional", rate: 0.45, from: 125140, to: null },
+  { name: "higher", rate: 0.4, from: 50271, to: 125140 },
+  { name: "additional", rate: 0.45, from: 125141, to: null },
 ];
 
 const SCOTLAND_2026_27 = [
   { name: "starter", rate: 0.19, from: 12570, to: 16537 },
-  { name: "basic", rate: 0.2, from: 16537, to: 29526 },
-  { name: "intermediate", rate: 0.21, from: 29526, to: 43662 },
-  { name: "higher", rate: 0.42, from: 43662, to: 75000 },
-  { name: "advanced", rate: 0.45, from: 75000, to: 125140 },
-  { name: "top", rate: 0.48, from: 125140, to: null },
+  { name: "basic", rate: 0.2, from: 16538, to: 29526 },
+  { name: "intermediate", rate: 0.21, from: 29527, to: 43662 },
+  { name: "higher", rate: 0.42, from: 43663, to: 75000 },
+  { name: "advanced", rate: 0.45, from: 75001, to: 125140 },
+  { name: "top", rate: 0.48, from: 125141, to: null },
 ];
 
 const SCOTLAND_2025_26 = [
   { name: "starter", rate: 0.19, from: 12570, to: 15397 },
-  { name: "basic", rate: 0.2, from: 15397, to: 27491 },
-  { name: "intermediate", rate: 0.21, from: 27491, to: 43662 },
-  { name: "higher", rate: 0.42, from: 43662, to: 75000 },
-  { name: "advanced", rate: 0.45, from: 75000, to: 125140 },
-  { name: "top", rate: 0.48, from: 125140, to: null },
+  { name: "basic", rate: 0.2, from: 15398, to: 27491 },
+  { name: "intermediate", rate: 0.21, from: 27492, to: 43662 },
+  { name: "higher", rate: 0.42, from: 43663, to: 75000 },
+  { name: "advanced", rate: 0.45, from: 75001, to: 125140 },
+  { name: "top", rate: 0.48, from: 125141, to: null },
 ];
 
 describe("income tax bands match the published GOV.UK tables", () => {
@@ -72,8 +72,9 @@ describe("band structure is sound", () => {
       it(`${taxYear} — ${region} bands are contiguous and open-ended`, () => {
         const bands = getRules(taxYear).incomeTax[region];
         expect(bands[0].lower).toBe(0);
+        // Inclusive bounds: each band starts one pound above the previous end
         for (let i = 1; i < bands.length; i++) {
-          expect(bands[i].lower).toBe(bands[i - 1].upper);
+          expect(bands[i].lower).toBe(bands[i - 1].upper + 1);
         }
         expect(bands[bands.length - 1].upper).toBe(Infinity);
         // Rates increase monotonically (no regressive bands)
@@ -115,7 +116,7 @@ describe("band boundaries behave as published", () => {
       grossAnnualSalary: 50271,
     });
     expect(at.incomeTax.total).toBe(toPence(7540));
-    expect(above.incomeTax.total).toBe(toPence(7540.4));
+    expect(above.incomeTax.total).toBe(toPence(7540.2));
   });
 
   it("England: £125,140 is the last 40% pound once PA is gone", () => {
@@ -145,6 +146,6 @@ describe("band boundaries behave as published", () => {
       grossAnnualSalary: 16538,
     });
     expect(at.incomeTax.total).toBe(toPence(753.73));
-    expect(above.incomeTax.total).toBe(toPence(753.93));
+    expect(above.incomeTax.total).toBe(toPence(753.92));
   });
 });

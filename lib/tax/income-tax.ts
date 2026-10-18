@@ -71,11 +71,12 @@ function bandedTax(
 
   for (const band of bands) {
     if (remaining <= 0) break;
-    const lowerPence = toPence(band.lower);
+    // Bounds are inclusive: each band is (upper − lower + 1) whole pounds
+    // wide, and the next band starts at the previous upper + 1.
     const width =
       band.upper === Infinity
         ? remaining
-        : toPence(band.upper) - lowerPence;
+        : toPence(band.upper - band.lower + 1);
     const amountInBand = clamp(remaining, 0, width);
     const tax = roundPence(amountInBand * band.rate);
     total += tax;
@@ -100,11 +101,10 @@ function bandIndexAt(
   for (let i = 0; i < bands.length; i++) {
     const band = bands[i];
     if (remaining <= 0) return i;
-    const lowerPence = toPence(band.lower);
     const width =
       band.upper === Infinity
         ? remaining
-        : toPence(band.upper) - lowerPence;
+        : toPence(band.upper - band.lower + 1);
     const amountInBand = clamp(remaining, 0, width);
     remaining -= amountInBand;
     if (remaining <= 0) return i;

@@ -76,11 +76,12 @@ function bandedTaxScaled(
 
   for (const band of bands) {
     if (remaining <= 0) break;
-    const lower = scalePence(band.lower, scale);
+    // Bounds are inclusive: width is (upper − lower + 1), scaled to the
+    // fraction of the year being calculated.
     const width =
       band.upper === Infinity
         ? remaining
-        : scalePence(band.upper, scale) - lower;
+        : scalePence(band.upper - band.lower + 1, scale);
     const amountInBand = clamp(remaining, 0, width);
     total += roundPence(amountInBand * band.rate);
     remaining -= amountInBand;

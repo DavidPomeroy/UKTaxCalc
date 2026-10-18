@@ -33,7 +33,7 @@ export interface TaxBand {
   name: string;
   rate: number;
   lower: number; // inclusive, POUNDS (converted to pence inside calculators)
-  upper: number; // exclusive, POUNDS; Infinity for open-ended
+  upper: number; // inclusive, POUNDS; Infinity for open-ended
 }
 
 export interface BandResult {
