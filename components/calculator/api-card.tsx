@@ -27,10 +27,16 @@ function toApiBody(s: Scenario) {
   };
 }
 
-export function ApiCard({ scenario }: { scenario: Scenario }) {
+export function ApiCard({
+  scenario,
+  origin,
+}: {
+  scenario: Scenario;
+  origin: string;
+}) {
   const [copied, setCopied] = React.useState(false);
   const body = toApiBody(scenario);
-  const curl = `curl -s ${typeof window !== "undefined" ? window.location.origin : ""}/api/v1/calculations \\
+  const curl = `curl -s ${origin}/api/v1/calculations \\
   -H 'content-type: application/json' \\
   -d '${JSON.stringify(body)}'`;
 

@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { calculate } from "@/lib/tax/calculate";
 import {
   scenarioFromSearchParams,
@@ -27,6 +28,17 @@ export default async function Home({
   const result = calculate(scenario);
   const frequency = scenario.payFrequency ?? "annual";
 
+  // Server-side origin for the copyable curl example. Using request headers
+  // avoids a `typeof window` branch, which caused a hydration mismatch.
+  const requestHeaders = await headers();
+  const host = requestHeaders.get("host") ?? "localhost:3015";
+  const proto =
+    requestHeaders.get("x-forwarded-proto") ??
+    (host.startsWith("localhost") || host.startsWith("127.0.0.1")
+      ? "http"
+      : "https");
+  const origin = `${proto}://${host}`;
+
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8">
       <div className="mb-8 max-w-2xl">
@@ -55,7 +67,7 @@ export default async function Home({
           <DeductionsTable result={result} frequency={frequency} />
           <div className="grid gap-6 md:grid-cols-2">
             <ShareCard scenario={scenario} />
-            <ApiCard scenario={scenario} />
+            <ApiCard scenario={scenario} origin={origin} />
           </div>
           <AssumptionsCard />
         </div>
