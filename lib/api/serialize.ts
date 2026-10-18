@@ -1,4 +1,5 @@
 import type { CalculationResult } from "@/lib/tax/types";
+import type { PayrollPeriodResult, PeriodAmounts } from "@/lib/tax/pay-period";
 
 /** Round a pence integer to pounds with 2 decimals, for API output. */
 export function penceToPounds(pence: number): number {
@@ -79,3 +80,31 @@ export function serializeCalculation(result: CalculationResult) {
 }
 
 export type SerializedCalculation = ReturnType<typeof serializeCalculation>;
+
+function periodAmounts(a: PeriodAmounts) {
+  return {
+    gross: penceToPounds(a.gross),
+    salarySacrifice: penceToPounds(a.salarySacrifice),
+    incomeTax: penceToPounds(a.incomeTax),
+    employeeNi: penceToPounds(a.employeeNi),
+    employerNi: penceToPounds(a.employerNi),
+    pensionEmployee: penceToPounds(a.pensionEmployee),
+    pensionEmployer: penceToPounds(a.pensionEmployer),
+    studentLoan: penceToPounds(a.studentLoan),
+    net: penceToPounds(a.net),
+  };
+}
+
+/** Convert a payroll period result (pence) into the public pounds shape. */
+export function serializePayrollPeriod(result: PayrollPeriodResult) {
+  return {
+    frequency: result.frequency,
+    periodNumber: result.periodNumber,
+    taxBasis: result.taxBasis,
+    periodsPerYear: result.periodsPerYear,
+    thisPeriod: periodAmounts(result.thisPeriod),
+    yearToDate: periodAmounts(result.yearToDate),
+  };
+}
+
+export type SerializedPayrollPeriod = ReturnType<typeof serializePayrollPeriod>;

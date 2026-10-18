@@ -64,4 +64,35 @@ export const rules202627 = {
     minEmployeePercent: 5,
     minEmployerPercent: 3,
   },
+
+  /** Payroll (per pay period) thresholds. HMRC publishes these separately
+   * from the annual thresholds; they are not simply annual ÷ periods.
+   * Student loan monthly/weekly figures equal floor(annual ÷ periods) and
+   * were cross-checked against the published 2026/27 values. */
+  payPeriods: {
+    monthly: {
+      ni: { primaryThreshold: 1048, upperEarningsLimit: 4189 },
+      employerNi: { secondaryThreshold: 417 },
+      pension: { qualifyingEarningsLower: 520, qualifyingEarningsUpper: 4189 },
+      studentLoans: {
+        plan1: 2241,
+        plan2: 2448,
+        plan4: 2816,
+        plan5: 2083,
+        postgraduate: 1750,
+      },
+    },
+    weekly: {
+      ni: { primaryThreshold: 242, upperEarningsLimit: 967 },
+      employerNi: { secondaryThreshold: 96 },
+      pension: { qualifyingEarningsLower: 120, qualifyingEarningsUpper: 967 },
+      studentLoans: {
+        plan1: 517,
+        plan2: 565,
+        plan4: 649,
+        plan5: 480,
+        postgraduate: 403,
+      },
+    },
+  },
 } as const;

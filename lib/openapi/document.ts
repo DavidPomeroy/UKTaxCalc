@@ -10,14 +10,18 @@ import {
 const calculationExample = {
   taxYear: "2026/27",
   region: "england",
-  grossAnnualSalary: 60000,
+  grossAnnualSalary: 45000,
+  payFrequency: "monthly",
+  periodNumber: 6,
+  taxBasis: "cumulative",
+  taxCode: "432L",
   pension: {
-    method: "net-pay",
-    employeePercent: 5,
+    method: "relief-at-source",
+    employeePercent: 4,
     employerPercent: 3,
     basis: "qualifying-earnings",
   },
-  studentLoans: ["plan2"],
+  studentLoans: [],
 };
 
 function problemRef(description: string) {
@@ -64,7 +68,9 @@ const paths: ZodOpenApiPathsObject = {
       operationId: "calculateTakeHome",
       summary: "Calculate a full take-home pay breakdown",
       description:
-        "Runs a server-side PAYE calculation (income tax, NI, student loans, pension) and returns an itemised breakdown in pounds.",
+        "Runs a server-side PAYE calculation (income tax, NI, student loans, pension) and returns an itemised breakdown in pounds. " +
+        "Set payFrequency to monthly or weekly (with an optional periodNumber and taxBasis) to additionally receive a payroll block " +
+        "using HMRC's per-period thresholds and cumulative PAYE, including year-to-date figures.",
       requestBody: {
         required: true,
         content: {

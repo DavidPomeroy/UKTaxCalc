@@ -64,4 +64,35 @@ export const rules202526 = {
     minEmployeePercent: 5,
     minEmployerPercent: 3,
   },
+
+  /** Payroll (per pay period) thresholds. NI and pension per-period values
+   * are unchanged from 2026/27 (frozen thresholds). Student loan
+   * monthly/weekly figures equal floor(annual ÷ periods), consistent with
+   * the published 2026/27 values. */
+  payPeriods: {
+    monthly: {
+      ni: { primaryThreshold: 1048, upperEarningsLimit: 4189 },
+      employerNi: { secondaryThreshold: 417 },
+      pension: { qualifyingEarningsLower: 520, qualifyingEarningsUpper: 4189 },
+      studentLoans: {
+        plan1: 2172,
+        plan2: 2372,
+        plan4: 2728,
+        plan5: 2083,
+        postgraduate: 1750,
+      },
+    },
+    weekly: {
+      ni: { primaryThreshold: 242, upperEarningsLimit: 967 },
+      employerNi: { secondaryThreshold: 96 },
+      pension: { qualifyingEarningsLower: 120, qualifyingEarningsUpper: 967 },
+      studentLoans: {
+        plan1: 501,
+        plan2: 547,
+        plan4: 629,
+        plan5: 480,
+        postgraduate: 403,
+      },
+    },
+  },
 } as const;

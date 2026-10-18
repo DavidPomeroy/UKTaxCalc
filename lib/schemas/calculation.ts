@@ -65,6 +65,26 @@ export const CalculationRequestSchema = z
       .enum(["annual", "monthly", "weekly"])
       .default("annual")
       .meta({ description: "Frequency for per-period display figures" }),
+    periodNumber: z
+      .number()
+      .int()
+      .min(1)
+      .max(52)
+      .optional()
+      .meta({
+        description:
+          "Pay period number within the tax year (1–12 monthly, 1–52 weekly). " +
+          "Requires payFrequency of monthly or weekly; defaults to period 1.",
+        example: 6,
+      }),
+    taxBasis: z
+      .enum(["cumulative", "month1"])
+      .optional()
+      .meta({
+        description:
+          "PAYE basis for per-period tax: cumulative (default) or month 1 / week 1.",
+        example: "cumulative",
+      }),
     pension: PensionInputSchema.optional().meta({
       description: "Workplace pension contribution details",
     }),
@@ -172,6 +192,29 @@ const moneyBlockSchema = z.object({
   weekly: z.number(),
 });
 
+const periodAmountsSchema = z.object({
+  gross: z.number(),
+  salarySacrifice: z.number(),
+  incomeTax: z.number(),
+  employeeNi: z.number(),
+  employerNi: z.number(),
+  pensionEmployee: z.number(),
+  pensionEmployer: z.number(),
+  studentLoan: z.number(),
+  net: z.number(),
+});
+
+export const PayrollResultSchema = z
+  .object({
+    frequency: z.enum(["monthly", "weekly"]),
+    periodNumber: z.number().int(),
+    taxBasis: z.enum(["cumulative", "month1"]),
+    periodsPerYear: z.number().int(),
+    thisPeriod: periodAmountsSchema,
+    yearToDate: periodAmountsSchema,
+  })
+  .meta({ id: "PayrollResult" });
+
 export const CalculationResponseSchema = z
   .object({
     meta: z.object({
@@ -191,6 +234,7 @@ export const CalculationResponseSchema = z
       marginalRate: z.number().meta({ example: 0.42 }),
     }),
     deductionsTotal: z.number(),
+    payroll: PayrollResultSchema.optional(),
   })
   .meta({ id: "CalculationResponse", outputId: "CalculationResponse" });
 

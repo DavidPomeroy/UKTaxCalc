@@ -1,6 +1,7 @@
 import { calculate } from "@/lib/tax/calculate";
+import { calculatePayrollPeriod } from "@/lib/tax/pay-period";
 import { CalculationRequestSchema } from "@/lib/schemas/calculation";
-import { serializeCalculation } from "@/lib/api/serialize";
+import { serializeCalculation, serializePayrollPeriod } from "@/lib/api/serialize";
 import {
   jsonResponse,
   validationProblem,
@@ -44,11 +45,43 @@ export async function POST(request: Request) {
 
   try {
     const result = calculate(parsed.data);
-    return jsonResponse(serializeCalculation(result), 200, {
-      "Cache-Control": "no-store",
-      "X-RateLimit-Limit": String(limit.limit),
-      "X-RateLimit-Remaining": String(limit.remaining),
-    });
+
+    // Payroll block: per-period (monthly/weekly) calculation using HMRC's
+    // per-period thresholds and cumulative PAYE.
+    let payroll: ReturnType<typeof serializePayrollPeriod> | undefined;
+    if (
+      parsed.data.payFrequency === "monthly" ||
+      parsed.data.payFrequency === "weekly"
+    ) {
+      const frequency = parsed.data.payFrequency;
+      const periodNumber = parsed.data.periodNumber ?? 1;
+      const periodsPerYear = frequency === "monthly" ? 12 : 52;
+      if (periodNumber > periodsPerYear) {
+        return validationProblem([
+          {
+            path: "periodNumber",
+            message: `${frequency} pay has periods 1–${periodsPerYear}; received ${periodNumber}.`,
+          },
+        ]);
+      }
+      payroll = serializePayrollPeriod(
+        calculatePayrollPeriod(parsed.data, {
+          frequency,
+          periodNumber,
+          taxBasis: parsed.data.taxBasis,
+        })
+      );
+    }
+
+    return jsonResponse(
+      { ...serializeCalculation(result), ...(payroll ? { payroll } : {}) },
+      200,
+      {
+        "Cache-Control": "no-store",
+        "X-RateLimit-Limit": String(limit.limit),
+        "X-RateLimit-Remaining": String(limit.remaining),
+      }
+    );
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return problemResponse(500, "Calculation failed", message);
