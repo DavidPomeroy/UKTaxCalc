@@ -11,12 +11,15 @@ import { getBands, getRules } from "./rules";
 /** Parse a PAYE tax code into a personal allowance in pounds.
  *
  * Supported codes:
- *   - "1257L" etc.: number × 10 = allowance (e.g. 1257L -> £12,570)
+ *   - Numeric + L/M/W suffix, 1 to 4 digits: number × 10 = allowance
+ *     (e.g. "1257L" -> £12,570, "99L" -> £990, "0L" -> £0)
+ *   - Optional S/C regional prefix (e.g. "S99L", "C1257L")
  *   - "BR": basic rate on all income (allowance 0)
  *   - "D0": higher rate on all (allowance 0)
  *   - "D1": additional rate on all (allowance 0)
  *   - "NT": no tax (allowance Infinity)
  *   - "0T": no allowance, bands still apply
+ * Trailing emergency suffixes (e.g. "1257L M1") are ignored.
  * Unknown codes fall back to the standard Personal Allowance.
  */
 export function parseTaxCode(
@@ -25,13 +28,23 @@ export function parseTaxCode(
 ): number {
   const code = (taxCode || "").trim().toUpperCase();
   if (!code) return defaultAllowance;
-  if (code === "BR" || code === "D0" || code === "D1" || code === "0T")
-    return 0;
-  if (code === "NT") return Infinity;
 
-  // Numeric prefix like 1257L -> 1257 * 10
-  const match = code.match(/^(\d{3,4})[LWTM]/);
-  if (match) return parseInt(match[1], 10) * 10;
+  // Strip emergency code suffixes: "1257L M1", "1257LM1", "D0 W1", etc.
+  const normalized = code.replace(/\s*[MW]1$/, "");
+
+  if (
+    normalized === "BR" ||
+    normalized === "D0" ||
+    normalized === "D1" ||
+    normalized === "0T"
+  )
+    return 0;
+  if (normalized === "NT") return Infinity;
+
+  // Numeric codes: 1–4 digits + L/M/W suffix, optionally S/C prefixed.
+  // Codes below 100 (0L–99L) are valid and parse to digits × 10.
+  const match = normalized.match(/^([SC]?)(\d{1,4})[LMW]$/);
+  if (match) return parseInt(match[2], 10) * 10;
 
   return defaultAllowance;
 }

@@ -100,4 +100,57 @@ describe("tax codes and allowances", () => {
     });
     expect(married.incomeTax.total).toBe(base.incomeTax.total - toPence(252));
   });
+
+  it("parses short codes 0L–99L (digits × 10, not the default allowance)", () => {
+    expect(parseTaxCode("0L", 12570)).toBe(0);
+    expect(parseTaxCode("1L", 12570)).toBe(10);
+    expect(parseTaxCode("7L", 12570)).toBe(70);
+    expect(parseTaxCode("57L", 12570)).toBe(570);
+    expect(parseTaxCode("99L", 12570)).toBe(990);
+    expect(parseTaxCode("100L", 12570)).toBe(1000);
+    expect(parseTaxCode("999L", 12570)).toBe(9990);
+  });
+
+  it("parses M/W suffixes and regional prefixes", () => {
+    expect(parseTaxCode("57M", 12570)).toBe(570);
+    expect(parseTaxCode("57W", 12570)).toBe(570);
+    expect(parseTaxCode("S99L", 12570)).toBe(990);
+    expect(parseTaxCode("C1257L", 12570)).toBe(12570);
+    expect(parseTaxCode("s0l", 12570)).toBe(0);
+  });
+
+  it("ignores emergency code suffixes (M1/W1)", () => {
+    expect(parseTaxCode("1257L M1", 12570)).toBe(12570);
+    expect(parseTaxCode("1257LM1", 12570)).toBe(12570);
+    expect(parseTaxCode("99L M1", 12570)).toBe(990);
+    expect(parseTaxCode("BR M1", 12570)).toBe(0);
+    expect(parseTaxCode("D0 W1", 12570)).toBe(0);
+    expect(parseTaxCode("NT M1", 12570)).toBe(Infinity);
+  });
+
+  it("applies short codes end to end", () => {
+    const r = calculate({
+      taxYear: "2026/27",
+      region: "england",
+      grossAnnualSalary: 30000,
+      taxCode: "99L",
+    });
+    // Allowance £990 → taxable £29,010 × 20% = £5,802
+    expect(r.incomeTax.personalAllowance).toBe(toPence(990));
+    expect(r.incomeTax.total).toBe(toPence(5802));
+    // NI is unaffected by tax code
+    expect(r.nationalInsurance.total).toBe(toPence(1394.4));
+  });
+
+  it("0L pays income tax on the entire pay", () => {
+    const r = calculate({
+      taxYear: "2026/27",
+      region: "england",
+      grossAnnualSalary: 30000,
+      taxCode: "0L",
+    });
+    expect(r.incomeTax.personalAllowance).toBe(0);
+    expect(r.incomeTax.total).toBe(toPence(6000));
+  });
+
 });
