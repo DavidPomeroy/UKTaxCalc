@@ -76,12 +76,12 @@ function bandedTaxScaled(
 
   for (const band of bands) {
     if (remaining <= 0) break;
-    // Bounds are inclusive: width is (upper − lower + 1), scaled to the
-    // fraction of the year being calculated.
+    // Bounds are cumulative taxable-income boundaries: width is
+    // (upper − lower), scaled to the fraction of the year being calculated.
     const width =
       band.upper === Infinity
         ? remaining
-        : scalePence(band.upper - band.lower + 1, scale);
+        : scalePence(band.upper - band.lower, scale);
     const amountInBand = clamp(remaining, 0, width);
     total += roundPence(amountInBand * band.rate);
     remaining -= amountInBand;

@@ -71,12 +71,13 @@ function bandedTax(
 
   for (const band of bands) {
     if (remaining <= 0) break;
-    // Bounds are inclusive: each band is (upper − lower + 1) whole pounds
-    // wide, and the next band starts at the previous upper + 1.
+    // Bounds are cumulative taxable-income boundaries: the band is
+    // (upper − lower) wide, so a band ending at £37,700 holds exactly
+    // £37,700 of taxable income.
     const width =
       band.upper === Infinity
         ? remaining
-        : toPence(band.upper - band.lower + 1);
+        : toPence(band.upper) - toPence(band.lower);
     const amountInBand = clamp(remaining, 0, width);
     const tax = roundPence(amountInBand * band.rate);
     total += tax;
@@ -104,7 +105,7 @@ function bandIndexAt(
     const width =
       band.upper === Infinity
         ? remaining
-        : toPence(band.upper - band.lower + 1);
+        : toPence(band.upper) - toPence(band.lower);
     const amountInBand = clamp(remaining, 0, width);
     remaining -= amountInBand;
     if (remaining <= 0) return i;

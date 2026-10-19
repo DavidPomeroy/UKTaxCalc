@@ -10,32 +10,37 @@ export const rules202627 = {
   marriageAllowanceTransfer: 1260,
 
   /** Income tax bands are expressed in TAXABLE income (after the Personal
-   * Allowance) with INCLUSIVE bounds in whole pounds: each band runs from
-   * `lower` to `upper`, and the next band starts at the previous upper + 1.
-   * Band width is therefore (upper − lower + 1). */
+   * Allowance). `lower` and `upper` are the cumulative boundaries at which
+   * each band starts and ends, in whole pounds, and the band is
+   * (upper − lower) wide. Adjacent bands share a boundary.
+   *
+   * These match HMRC's "Income after allowances" table, so the top threshold
+   * is £125,140 of TAXABLE income — it is NOT £125,140 gross minus the
+   * Personal Allowance. By the time taxable income reaches £125,140 the
+   * allowance has already tapered to nil, so the two coincide. */
   incomeTax: {
     england: [
       { name: "basic", rate: 0.20, lower: 0, upper: 37700 },
-      { name: "higher", rate: 0.40, lower: 37701, upper: 112570 },
-      { name: "additional", rate: 0.45, lower: 112571, upper: Infinity },
+      { name: "higher", rate: 0.40, lower: 37700, upper: 125140 },
+      { name: "additional", rate: 0.45, lower: 125140, upper: Infinity },
     ] as TaxBand[],
     wales: [
       { name: "basic", rate: 0.20, lower: 0, upper: 37700 },
-      { name: "higher", rate: 0.40, lower: 37701, upper: 112570 },
-      { name: "additional", rate: 0.45, lower: 112571, upper: Infinity },
+      { name: "higher", rate: 0.40, lower: 37700, upper: 125140 },
+      { name: "additional", rate: 0.45, lower: 125140, upper: Infinity },
     ] as TaxBand[],
     "northern-ireland": [
       { name: "basic", rate: 0.20, lower: 0, upper: 37700 },
-      { name: "higher", rate: 0.40, lower: 37701, upper: 112570 },
-      { name: "additional", rate: 0.45, lower: 112571, upper: Infinity },
+      { name: "higher", rate: 0.40, lower: 37700, upper: 125140 },
+      { name: "additional", rate: 0.45, lower: 125140, upper: Infinity },
     ] as TaxBand[],
     scotland: [
       { name: "starter", rate: 0.19, lower: 0, upper: 3967 },
-      { name: "basic", rate: 0.20, lower: 3968, upper: 16956 },
-      { name: "intermediate", rate: 0.21, lower: 16957, upper: 31092 },
-      { name: "higher", rate: 0.42, lower: 31093, upper: 62430 },
-      { name: "advanced", rate: 0.45, lower: 62431, upper: 112570 },
-      { name: "top", rate: 0.48, lower: 112571, upper: Infinity },
+      { name: "basic", rate: 0.20, lower: 3967, upper: 16956 },
+      { name: "intermediate", rate: 0.21, lower: 16956, upper: 31092 },
+      { name: "higher", rate: 0.42, lower: 31092, upper: 62430 },
+      { name: "advanced", rate: 0.45, lower: 62430, upper: 125140 },
+      { name: "top", rate: 0.48, lower: 125140, upper: Infinity },
     ] as TaxBand[],
   },
 

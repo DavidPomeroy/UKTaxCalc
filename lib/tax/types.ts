@@ -32,8 +32,12 @@ export interface CalculationInput {
 export interface TaxBand {
   name: string;
   rate: number;
-  lower: number; // inclusive, POUNDS (converted to pence inside calculators)
-  upper: number; // inclusive, POUNDS; Infinity for open-ended
+  /** Start boundary in TAXABLE pounds (converted to pence inside
+   * calculators). Adjacent bands share a boundary. */
+  lower: number;
+  /** End boundary in TAXABLE pounds; Infinity for open-ended. The band is
+   * (upper − lower) wide. */
+  upper: number;
 }
 
 export interface BandResult {

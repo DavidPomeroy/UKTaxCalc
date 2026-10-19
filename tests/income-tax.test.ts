@@ -16,33 +16,34 @@ describe("income tax — England, 2026/27", () => {
     expect(r.takeHome.annual).toBe(toPence(25119.6));
   });
 
-  it("£60,000 pays £11,431.80 tax, £3,210.60 NI, nets £45,357.60", () => {
+  it("£60,000 pays £11,432.00 tax, £3,210.60 NI, nets £45,357.40", () => {
     const r = calculate({ taxYear: "2026/27", region: "england", grossAnnualSalary: 60000 });
-    expect(r.incomeTax.total).toBe(toPence(11431.8));
+    expect(r.incomeTax.total).toBe(toPence(11432));
     expect(r.nationalInsurance.total).toBe(toPence(3210.6));
-    expect(r.takeHome.annual).toBe(toPence(45357.6));
+    expect(r.takeHome.annual).toBe(toPence(45357.4));
   });
 
-  it("£100,000 pays £27,431.80 tax", () => {
+  it("£100,000 pays £27,432.00 tax", () => {
     const r = calculate({ taxYear: "2026/27", region: "england", grossAnnualSalary: 100000 });
-    expect(r.incomeTax.total).toBe(toPence(27431.8));
+    expect(r.incomeTax.total).toBe(toPence(27432));
     expect(r.incomeTax.personalAllowance).toBe(toPence(12570));
   });
 
   it("£110,000 tapers PA to £7,570", () => {
     const r = calculate({ taxYear: "2026/27", region: "england", grossAnnualSalary: 110000 });
     expect(r.incomeTax.personalAllowance).toBe(toPence(7570));
+    expect(r.incomeTax.total).toBe(toPence(33432));
   });
 
-  it("£125,140 removes PA entirely (£0) and pays £43,144.25 tax", () => {
+  it("£125,140 removes PA entirely (£0) and pays £42,516.00 tax", () => {
     const r = calculate({ taxYear: "2026/27", region: "england", grossAnnualSalary: 125140 });
     expect(r.incomeTax.personalAllowance).toBe(0);
-    expect(r.incomeTax.total).toBe(toPence(43144.25));
+    expect(r.incomeTax.total).toBe(toPence(42516));
   });
 
-  it("£150,000 pays £54,331.25 tax", () => {
+  it("£150,000 pays £53,703.00 tax", () => {
     const r = calculate({ taxYear: "2026/27", region: "england", grossAnnualSalary: 150000 });
-    expect(r.incomeTax.total).toBe(toPence(54331.25));
+    expect(r.incomeTax.total).toBe(toPence(53703));
   });
 
   it("marginal rate is 42% at £60,000 (40% + 2% NI)", () => {
@@ -57,15 +58,15 @@ describe("income tax — England, 2026/27", () => {
 });
 
 describe("income tax — Scotland", () => {
-  it("£50,000 (2026/27) pays £8,981.82 tax", () => {
+  it("£50,000 (2026/27) pays £8,982.05 tax", () => {
     const r = calculate({ taxYear: "2026/27", region: "scotland", grossAnnualSalary: 50000 });
-    expect(r.incomeTax.total).toBe(toPence(8981.82));
+    expect(r.incomeTax.total).toBe(toPence(8982.05));
   });
 
-  it("£50,000 (2026/27) takes home £38,023.78", () => {
+  it("£50,000 (2026/27) takes home £38,023.55", () => {
     const r = calculate({ taxYear: "2026/27", region: "scotland", grossAnnualSalary: 50000 });
     expect(r.nationalInsurance.total).toBe(toPence(2994.4));
-    expect(r.takeHome.annual).toBe(toPence(38023.78));
+    expect(r.takeHome.annual).toBe(toPence(38023.55));
   });
 
   it("£50,000 (2025/26) pays more than 2026/27 (tighter starter/basic bands)", () => {
