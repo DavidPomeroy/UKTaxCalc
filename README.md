@@ -28,7 +28,7 @@ Implemented and tested:
 
 - `lib/tax/` — the calculation engine (integer-pence arithmetic)
 - `lib/tax/rules/` — versioned 2025/26 and 2026/27 rule sets
-- `tests/` — 38 unit tests, all passing (`pnpm test`)
+- `tests/` — 87 unit tests, all passing (`pnpm test`)
 - `lib/schemas/calculation.ts` — Zod request/response schemas for the API
 - `app/` — the calculator UI (server-rendered results, shareable URLs)
 - `app/api/v1/` — the public API (`/api/v1/calculations`, `/take-home-pay`,
@@ -48,7 +48,7 @@ pnpm dev      # starts on http://localhost:3015
 Other scripts:
 
 ```bash
-pnpm test        # run the 27 unit tests (vitest)
+pnpm test        # run the 87 unit tests (vitest)
 pnpm test:watch  # watch mode
 pnpm typecheck   # tsc --noEmit
 pnpm lint
@@ -218,7 +218,7 @@ lib/schemas/         Zod API request/response schemas
 lib/api/             CORS, RFC 9457 errors, rate limiting, serialization
 lib/openapi/         OpenAPI document builder (zod-openapi)
 lib/calculator/      URL scenario + per-period formatting helpers
-tests/               38 unit tests (engine and scenario layer)
+tests/               87 unit tests (engine and scenario layer)
 ```
 
 ## Deploy
