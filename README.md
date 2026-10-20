@@ -4,6 +4,9 @@ A UK take-home pay calculator built with **Next.js 16**, **shadcn/ui** and
 TypeScript. All calculations run on the server against versioned,
 GOV.UK-verified tax rules — no database, no accounts, no stored data.
 
+**Live:** <https://uk-tax-calc-six.vercel.app> ·
+**API reference:** <https://uk-tax-calc-six.vercel.app/scalar>
+
 ## What it does
 
 Enter a gross salary and get a full annual breakdown:
@@ -223,7 +226,12 @@ tests/               87 unit tests (engine and scenario layer)
 
 ## Deploy
 
-No environment variables or database required. Deploy to Vercel:
+No environment variables or database required. It is deployed on Vercel at
+<https://uk-tax-calc-six.vercel.app>, connected to this repository's `main`
+branch, so a push to `main` deploys automatically and other branches get
+preview deployments.
+
+To deploy it yourself:
 
 ```bash
 vercel
